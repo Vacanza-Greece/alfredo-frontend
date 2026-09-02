@@ -286,7 +286,7 @@ const Dashboard = () => {
               <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/90 px-4 py-2 shadow-md backdrop-blur-md">
                 <span className="h-2 w-2 rounded-full bg-primary-blue" />
 
-                <span className="font-DM-sans text-xs font-semibold uppercase tracking-[0.12em] text-primary-blue">
+                <span className="text-xs font-semibold tracking-[0.12em] text-primary-blue">
                   {t("dashboard.widgetText.travelHubTitle")}
                 </span>
               </div>
@@ -342,7 +342,7 @@ const Dashboard = () => {
         {/* Travel services */}
         <div className="mt-20 md:mt-24">
           <div className="mb-10 text-center">
-            <span className="font-DM-sans text-xs font-semibold uppercase tracking-[0.18em] text-primary-blue/70">
+            <span className="font-DM-sans text-xs font-semibold tracking-[0.18em] text-primary-blue/70">
               {t("dashboard.widgetText.travelServiceHeading")}
             </span>
 
@@ -493,17 +493,14 @@ const Dashboard = () => {
               <iframe
                 src="https://www.trip.com/partners/ad/S19050852?Allianceid=9679412&SID=326856440&trip_sub1="
                 width="900"
-                height="200"
-                frameBorder="0"
+                height="230"
                 scrolling="no"
+                id="S19050852"
                 style={{
                   border: "none",
                   display: "block",
                 }}
-                id="S19050852-desktop"
-                title="Trip.com Flight Booking"
-                className="hidden md:block"
-              />
+              ></iframe>
             </div>
           </div>
         </div>
