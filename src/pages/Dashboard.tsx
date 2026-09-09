@@ -20,6 +20,7 @@ import { fetchUser } from "@/store/Slices/Profile/ProfileSlice";
 import { Button } from "@/components/ui/button";
 import { useNavigate, Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import DiscoverCarsWidget from "@/components/dashboard/DiscoverCarWidget";
 // import VacanzaProtectWidget from "@/components/dashboard/VacanzaProtectWidget";
 import { FaFerry } from "react-icons/fa6";
@@ -38,6 +39,7 @@ const Dashboard = () => {
   const [checkoutLoading, setCheckoutLoading] = useState(false);
 
   const navigate = useNavigate();
+  const isDesktop = useMediaQuery("(min-width: 768px)");
 
   useEffect(() => {
     dispatch(fetchUser());
@@ -309,18 +311,18 @@ const Dashboard = () => {
                 <button
                   type="button"
                   onClick={() => navigate("/places")}
-                  className="group relative inline-flex cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-full bg-primary-blue px-8 py-4 text-lg font-medium text-white shadow-[0_12px_30px_-8px_rgba(15,45,87,0.7)] transition-all duration-300 ease-out hover:-translate-y-1 hover:bg-[#114480] hover:shadow-[0_20px_40px_-10px_rgba(15,45,87,0.8)] active:translate-y-0 active:scale-95"
+                  className="group relative inline-flex cursor-pointer touch-manipulation items-center justify-center gap-2 overflow-hidden rounded-full bg-primary-blue px-8 py-4 text-lg font-medium text-white shadow-[0_12px_30px_-8px_rgba(15,45,87,0.7)] transition-all duration-300 ease-out hover:-translate-y-1 hover:bg-[#114480] hover:shadow-[0_20px_40px_-10px_rgba(15,45,87,0.8)] active:translate-y-0 active:scale-95 active:bg-[#114480] active:shadow-[0_20px_40px_-10px_rgba(15,45,87,0.8)]"
                 >
-                  {/* Shine sweep */}
-                  <span className="pointer-events-none absolute inset-y-0 -left-1/3 z-0 w-1/3 -skew-x-12 bg-white/30 transition-transform duration-700 ease-out group-hover:translate-x-[500%]" />
+                  {/* Shine sweep — group-active covers touch taps, which have no :hover state */}
+                  <span className="pointer-events-none absolute inset-y-0 -left-1/3 z-0 w-1/3 -skew-x-12 bg-white/30 transition-transform duration-700 ease-out group-hover:translate-x-[500%] group-active:translate-x-[500%]" />
 
                   {/* Soft glow ring */}
-                  <span className="pointer-events-none absolute inset-0 z-0 rounded-full opacity-0 ring-4 ring-white/20 transition-opacity duration-300 group-hover:opacity-100" />
+                  <span className="pointer-events-none absolute inset-0 z-0 rounded-full opacity-0 ring-4 ring-white/20 transition-opacity duration-300 group-hover:opacity-100 group-active:opacity-100" />
 
                   <span className="relative z-10">
                     {t("dashboard.seeAllAvailableHouse")}
                   </span>
-                  <ArrowRight className="relative z-10 h-5 w-5 transition-transform duration-300 ease-out group-hover:translate-x-1.5" />
+                  <ArrowRight className="relative z-10 h-5 w-5 transition-transform duration-300 ease-out group-hover:translate-x-1.5 group-active:translate-x-1.5" />
                 </button>
               </div>
             </div>
@@ -488,35 +490,33 @@ const Dashboard = () => {
           </div>
 
           {/* Trip.com Widget */}
-          <div className="flex justify-center px-4 py-7 md:px-8 md:py-9 overflow-x-auto">
-            <div className="overflow-hidden rounded-2xl bg-white">
-              {/* Phone layout */}
-              <iframe
-                src="https://www.trip.com/partners/ad/S19050852?Allianceid=9679412&SID=326856440&trip_sub1="
-                width="320"
-                height="480"
-                frameBorder="0"
-                scrolling="no"
-                style={{
-                  border: "none",
-                  display: "block",
-                }}
-                id="S19050852-mobile"
-                title="Trip.com Flight Booking"
-                className="block md:hidden"
-              />
-              {/* Computer layout */}
-              <iframe
-                src="https://www.trip.com/partners/ad/S19050852?Allianceid=9679412&SID=326856440&trip_sub1="
-                width="900"
-                height="230"
-                scrolling="no"
-                id="S19050852"
-                style={{
-                  border: "none",
-                  display: "block",
-                }}
-              ></iframe>
+          <div className="flex justify-center px-4 py-7 md:px-8 md:py-9 w-full overflow-x-auto">
+            <div className="overflow-hidden rounded-2xl bg-white max-w-full">
+              {isDesktop ? (
+                <iframe
+                  key="desktop"
+                  src="https://www.trip.com/partners/ad/S19050852?Allianceid=9679412&SID=326856440&trip_sub1="
+                  width="900"
+                  height="230"
+                  frameBorder="0"
+                  scrolling="no"
+                  style={{ border: "none", display: "block" }}
+                  id="S19050852"
+                  title="Trip.com Flight Booking"
+                />
+              ) : (
+                <iframe
+                  key="mobile"
+                  src="https://www.trip.com/partners/ad/S19050852?Allianceid=9679412&SID=326856440&trip_sub1="
+                  width="320"
+                  height="480"
+                  frameBorder="0"
+                  scrolling="no"
+                  style={{ border: "none", display: "block", maxWidth: "100%" }}
+                  id="S19050852-mobile"
+                  title="Trip.com Flight Booking"
+                />
+              )}
             </div>
           </div>
         </div>
