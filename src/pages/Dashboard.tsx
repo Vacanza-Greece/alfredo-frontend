@@ -509,9 +509,9 @@ const Dashboard = () => {
                   key="mobile"
                   src="https://www.trip.com/partners/ad/S19050852?Allianceid=9679412&SID=326856440&trip_sub1="
                   width="320"
-                  height="480"
+                  height="660"
                   frameBorder="0"
-                  scrolling="no"
+                  scrolling="auto"
                   style={{ border: "none", display: "block", maxWidth: "100%" }}
                   id="S19050852-mobile"
                   title="Trip.com Flight Booking"
