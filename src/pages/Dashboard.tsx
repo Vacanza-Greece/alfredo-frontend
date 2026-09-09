@@ -18,8 +18,8 @@ import SearchFilter from "@/components/home/SearchFilter";
 import SearchResults from "@/components/Search/SearchResults";
 import { fetchUser } from "@/store/Slices/Profile/ProfileSlice";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
-import PrimaryButton from "@/components/reusable/PrimaryButton";
+import { useNavigate, Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 import DiscoverCarsWidget from "@/components/dashboard/DiscoverCarWidget";
 // import VacanzaProtectWidget from "@/components/dashboard/VacanzaProtectWidget";
 import { FaFerry } from "react-icons/fa6";
@@ -281,7 +281,15 @@ const Dashboard = () => {
             {/* Soft white gradient behind content */}
             <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-black/20 to-black/35" />
 
-            <div className="relative mx-auto flex max-w-3xl flex-col items-center text-center">
+            {/* Clickable background — same destination as the CTA button. Sits behind the
+                text (lower z-index) so headings stay selectable instead of becoming a link. */}
+            <Link
+              to="/places"
+              aria-label={t("dashboard.seeAllAvailableHouse")}
+              className="absolute inset-0 z-[1]"
+            />
+
+            <div className="relative z-10 mx-auto flex max-w-3xl flex-col items-center text-center md:py-16">
               {/* Eyebrow */}
               <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/90 px-4 py-2 shadow-md backdrop-blur-md">
                 <span className="h-2 w-2 rounded-full bg-primary-blue" />
@@ -292,20 +300,28 @@ const Dashboard = () => {
               </div>
 
               {/* Main heading */}
-              <h1 className="font-DM-sans text-3xl max-w-2xl font-bold leading-tight tracking-tight text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)] md:text-5xl">
-                {/* Organize your next trip
-                <span className="block text-white">in one page!</span> */}
+              <h1 className="font-DM-sans text-2xl md:text-3xl max-w-2xl font-medium md:font-semibold leading-tight tracking-wider text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)] ">
                 {t("dashboard.widgetText.travelHubSubtitle")}
               </h1>
 
               {/* CTA */}
-              <div className="mt-8">
-                <PrimaryButton
-                  title={t("dashboard.seeAllAvailableHouse")}
-                  onClick={() => {
-                    navigate("/places");
-                  }}
-                />
+              <div className="relative z-10 mt-8">
+                <button
+                  type="button"
+                  onClick={() => navigate("/places")}
+                  className="group relative inline-flex cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-full bg-primary-blue px-8 py-4 text-lg font-medium text-white shadow-[0_12px_30px_-8px_rgba(15,45,87,0.7)] transition-all duration-300 ease-out hover:-translate-y-1 hover:bg-[#114480] hover:shadow-[0_20px_40px_-10px_rgba(15,45,87,0.8)] active:translate-y-0 active:scale-95"
+                >
+                  {/* Shine sweep */}
+                  <span className="pointer-events-none absolute inset-y-0 -left-1/3 z-0 w-1/3 -skew-x-12 bg-white/30 transition-transform duration-700 ease-out group-hover:translate-x-[500%]" />
+
+                  {/* Soft glow ring */}
+                  <span className="pointer-events-none absolute inset-0 z-0 rounded-full opacity-0 ring-4 ring-white/20 transition-opacity duration-300 group-hover:opacity-100" />
+
+                  <span className="relative z-10">
+                    {t("dashboard.seeAllAvailableHouse")}
+                  </span>
+                  <ArrowRight className="relative z-10 h-5 w-5 transition-transform duration-300 ease-out group-hover:translate-x-1.5" />
+                </button>
               </div>
             </div>
           </div>
