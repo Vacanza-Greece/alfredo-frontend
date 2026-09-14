@@ -7,8 +7,8 @@ import {
   SwitchCamera,
   Video,
   VideoOff,
+  Volume1,
   Volume2,
-  VolumeX,
 } from "lucide-react";
 import { useCall } from "@/contexts/CallContext";
 
@@ -19,6 +19,17 @@ const formatDuration = (seconds: number) => {
   const secs = (seconds % 60).toString().padStart(2, "0");
   return `${mins}:${secs}`;
 };
+
+// Browsers give web pages no way to physically reroute audio to the phone's
+// earpiece — that's gated behind native AudioManager (Android) / AVAudioSession
+// (iOS) APIs a plain website can't reach, and setSinkId() can't fill the gap
+// because phones essentially never expose the earpiece as a separate
+// selectable output device. So "speaker off" approximates a private,
+// phone-to-ear call by dropping the remote volume instead of rerouting it —
+// the one lever HTMLMediaElement actually gives us, and it works everywhere
+// (including iOS Safari, where setSinkId doesn't exist at all).
+const REMOTE_VOLUME_SPEAKER_ON = 1;
+const REMOTE_VOLUME_SPEAKER_OFF = 0.15;
 
 const CallScreen = () => {
   const {
@@ -57,6 +68,16 @@ const CallScreen = () => {
     if (remoteVideoRef.current) remoteVideoRef.current.srcObject = remoteStream;
   }, [remoteStream, isOnScreen]);
 
+  // Re-applied whenever the remote element gets a fresh stream, since
+  // assigning srcObject doesn't preserve a previously-set volume.
+  useEffect(() => {
+    if (remoteVideoRef.current) {
+      remoteVideoRef.current.volume = isSpeakerOn
+        ? REMOTE_VOLUME_SPEAKER_ON
+        : REMOTE_VOLUME_SPEAKER_OFF;
+    }
+  }, [isSpeakerOn, remoteStream]);
+
   useEffect(() => {
     if (status !== "active") {
       setDuration(0);
@@ -73,32 +94,7 @@ const CallScreen = () => {
     }
   }, [status]);
 
-  const toggleSpeaker = async () => {
-    const nextSpeakerOn = !isSpeakerOn;
-    const audioEl = remoteVideoRef.current as
-      | (HTMLVideoElement & { setSinkId?: (sinkId: string) => Promise<void> })
-      | null;
-
-    // setSinkId lets us pick the actual output device (e.g. "Speakerphone" vs
-    // "Earpiece" on Android). Unsupported browsers (notably Safari) just keep
-    // playing on the default output — the toggle still tracks intent for the UI.
-    if (audioEl && typeof audioEl.setSinkId === "function") {
-      try {
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        const outputs = devices.filter((d) => d.kind === "audiooutput");
-        const speaker = outputs.find((d) => /speaker/i.test(d.label));
-        const earpiece = outputs.find((d) => /earpiece|receiver/i.test(d.label));
-        const targetId = nextSpeakerOn
-          ? speaker?.deviceId || "default"
-          : earpiece?.deviceId || speaker?.deviceId || "default";
-        await audioEl.setSinkId(targetId);
-      } catch (err) {
-        console.error("Failed to change audio output:", err);
-      }
-    }
-
-    setIsSpeakerOn(nextSpeakerOn);
-  };
+  const toggleSpeaker = () => setIsSpeakerOn((prev) => !prev);
 
   const statusLabel = () => {
     switch (status) {
@@ -205,8 +201,8 @@ const CallScreen = () => {
             <button
               type="button"
               onClick={toggleSpeaker}
-              aria-label={isSpeakerOn ? "Turn speaker off" : "Turn speaker on"}
-              title={isSpeakerOn ? "Speaker on" : "Speaker off"}
+              aria-label={isSpeakerOn ? "Lower call volume" : "Raise call volume"}
+              title={isSpeakerOn ? "Speaker on" : "Quiet (phone-to-ear)"}
               className={`w-14 h-14 rounded-full flex items-center justify-center transition-colors cursor-pointer active:scale-95 ${
                 isSpeakerOn
                   ? "bg-white text-[#0d1b2a]"
@@ -216,7 +212,7 @@ const CallScreen = () => {
               {isSpeakerOn ? (
                 <Volume2 className="w-6 h-6" />
               ) : (
-                <VolumeX className="w-6 h-6" />
+                <Volume1 className="w-6 h-6" />
               )}
             </button>
 
